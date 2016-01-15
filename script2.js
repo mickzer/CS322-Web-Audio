@@ -1,9 +1,10 @@
 
 $(document).ready(function() {
 
-  var delay = null;
-  var feedback = null;
-  var filter = null;
+  var delay = 0.0;
+  var feedback = 0.0;
+  var filter = 0.0;
+
 
   $(document).on("change", "#delay-val", function() {
     if(delay != null) {
@@ -61,11 +62,11 @@ $(document).ready(function() {
          var mediaStreamSource = ctx.createMediaStreamSource( stream );
 
          delay = ctx.createDelay();
-         delay.delayTime.value = 0.5;
+         delay.delayTime.value = 0;
          feedback = ctx.createGain();
-         feedback.gain.value = 0.8;
+         feedback.gain.value = 0;
          filter = ctx.createBiquadFilter();
-         filter.frequency.value = 1000;
+         filter.frequency.value = 0;
 
          delay.connect(feedback);
          feedback.connect(filter);
@@ -75,15 +76,14 @@ $(document).ready(function() {
         //  mediaStreamSource.connect(ctx.destination);
         delay.connect(ctx.destination);
 
-         // Connect it to the destination to hear yourself (or any other node for processing!)
-         mediaStreamSource.connect( ctx.destination );
-        
+         // Connect it to the destination to hear yourself
+        mediaStreamSource.connect( ctx.destination );
+
       },
       function(err) {
         console.log(err);
       }
     );
-
 
   } else {
      console.log('getUserMedia not supported on your browser!');
@@ -103,11 +103,11 @@ $(document).ready(function() {
     WIDTH = canvas.width
     HEIGHT = canvas.height;
 
-    draw()
+    draw_bar_graph();
 
-    function draw() {
+    function draw_oscilloscope() {
 
-      requestAnimationFrame(draw);
+      requestAnimationFrame(draw_oscilloscope);
 
       analyser.getByteTimeDomainData(dataArray);
 
@@ -139,6 +139,30 @@ $(document).ready(function() {
 
       canvasCtx.lineTo(canvas.width, canvas.height/2);
       canvasCtx.stroke();
+
+    }
+
+    function draw_bar_graph() {
+
+      requestAnimationFrame(draw_bar_graph);
+
+      analyser.getByteTimeDomainData(dataArray);
+
+      canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+      canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+
+      var barWidth = (WIDTH / bufferLength) * 2.5;
+      var barHeight;
+      var x = 0;
+
+      for(var i = 0; i < bufferLength; i++) {
+        barHeight = dataArray[i]*1.25;
+
+        canvasCtx.fillStyle = 'rgb(' + (barHeight+100) + ',50,50)';
+        canvasCtx.fillRect(x,HEIGHT-barHeight/2,barWidth,barHeight);
+
+        x += barWidth + 1;
+      }
 
     }
   }

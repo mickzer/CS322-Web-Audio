@@ -1,3 +1,32 @@
+header {
+  width: 600px;
+  height: 100px;
+  margin: auto;
+}
+
+header h1 {
+  font-family: "Bebas";
+  text-align: center;
+}
+
+.main-content {
+  width: 600px;
+  margin: auto;
+}
+
+p {
+  font-family: "Bebas";
+  word-spacing: 10px;
+}
+
+.visualizer {
+  width: 600px;
+}
+
+input[type='range'] {
+  width: 600px;
+}
+
 #stop-record {
-  display: none;
+  display: block;
 }
