@@ -1,3 +1,12 @@
+@font-face {
+	font-family: 'BEBAS';
+	src: url('BEBAS.eot'); /* IE9 Compat Modes */
+	src: url('BEBAS.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+	     url('BEBAS.woff') format('woff'), /* Modern Browsers */
+	     url('BEBAS.ttf')  format('truetype'), /* Safari, Android, iOS */
+	     url('BEBAS.svg#svgFontName') format('svg'); /* Legacy iOS */
+}
+
 header {
   width: 600px;
   height: 100px;
@@ -12,6 +21,10 @@ header h1 {
 .main-content {
   width: 600px;
   margin: auto;
+}
+
+#bar-canvas {
+  display: none;
 }
 
 p {

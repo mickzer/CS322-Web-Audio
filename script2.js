@@ -35,18 +35,25 @@ $(document).ready(function() {
     }
   });
 
+  $(document).on("click", "#toggle-visualizer", function() {
+    $("#bar-canvas").toggle();
+    $("#graph-canvas").toggle();  
+  });
+
   navigator.getUserMedia = ( navigator.getUserMedia ||
                          navigator.webkitGetUserMedia ||
                          navigator.mozGetUserMedia ||
                          navigator.msGetUserMedia);
 
 
-  var canvas = document.querySelector('.visualizer');
+  var bar_canvas = document.querySelector('#bar-canvas');
+  var graph_canvas = document.querySelector('#graph-canvas');
 
   // visualiser setup - create web audio api context and canvas
 
   var ctx = new (window.AudioContext || webkitAudioContext)();
-  var canvasCtx = canvas.getContext("2d");
+  var barCanvasCtx = bar_canvas.getContext("2d");
+  var graphCanvasCtx = graph_canvas.getContext("2d");
 
   var id = 0;
 
@@ -100,10 +107,8 @@ $(document).ready(function() {
     source.connect(analyser);
     //analyser.connect(audioCtx.destination);
 
-    WIDTH = canvas.width
-    HEIGHT = canvas.height;
-
     draw_bar_graph();
+    draw_oscilloscope();
 
     function draw_oscilloscope() {
 
@@ -111,34 +116,34 @@ $(document).ready(function() {
 
       analyser.getByteTimeDomainData(dataArray);
 
-      canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-      canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+      graphCanvasCtx.fillStyle = 'rgb(200, 200, 200)';
+      graphCanvasCtx.fillRect(0, 0, graph_canvas.width, graph_canvas.height);
 
-      canvasCtx.lineWidth = 2;
-      canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+      graphCanvasCtx.lineWidth = 2;
+      graphCanvasCtx.strokeStyle = 'rgb(0, 0, 0)';
 
-      canvasCtx.beginPath();
+      graphCanvasCtx.beginPath();
 
-      var sliceWidth = WIDTH * 1.0 / bufferLength;
+      var sliceWidth = graph_canvas.width * 1.0 / bufferLength;
       var x = 0;
 
 
       for(var i = 0; i < bufferLength; i++) {
 
         var v = dataArray[i] / 128.0;
-        var y = v * HEIGHT/2;
+        var y = v * graph_canvas.height/2;
 
         if(i === 0) {
-          canvasCtx.moveTo(x, y);
+          graphCanvasCtx.moveTo(x, y);
         } else {
-          canvasCtx.lineTo(x, y);
+          graphCanvasCtx.lineTo(x, y);
         }
 
         x += sliceWidth;
       }
 
-      canvasCtx.lineTo(canvas.width, canvas.height/2);
-      canvasCtx.stroke();
+      graphCanvasCtx.lineTo(graph_canvas.width, graph_canvas.height/2);
+      graphCanvasCtx.stroke();
 
     }
 
@@ -148,18 +153,18 @@ $(document).ready(function() {
 
       analyser.getByteTimeDomainData(dataArray);
 
-      canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-      canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+      barCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
+      barCanvasCtx.fillRect(0, 0, bar_canvas.width, bar_canvas.height);
 
-      var barWidth = (WIDTH / bufferLength) * 2.5;
+      var barWidth = (bar_canvas.width / bufferLength) * 2.5;
       var barHeight;
       var x = 0;
 
       for(var i = 0; i < bufferLength; i++) {
         barHeight = dataArray[i]*1.25;
 
-        canvasCtx.fillStyle = 'rgb(' + (barHeight+100) + ',50,50)';
-        canvasCtx.fillRect(x,HEIGHT-barHeight/2,barWidth,barHeight);
+        barCanvasCtx.fillStyle = 'rgb(' + (barHeight+100) + ',50,50)';
+        barCanvasCtx.fillRect(x,bar_canvas.height-barHeight/2,barWidth,barHeight);
 
         x += barWidth + 1;
       }

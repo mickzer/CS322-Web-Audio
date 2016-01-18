@@ -15,7 +15,9 @@
 
 
     <div class="main-content">
-      <canvas width="600" class="visualizer"></canvas>
+      <canvas id="bar-canvas" width="600" class="visualizer"></canvas>
+      <canvas id="graph-canvas" width="600" class="visualizer"></canvas>
+      <button type="button" id="toggle-visualizer">Toggle Visualization</button>
       <p>Delay</p>
       <input id="delay-val" type="range" step="0.01" min="0.00" max="1.00" value="0.00"/>
       <p>Feedback</p>
@@ -31,7 +33,6 @@
 
   </div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
-<script src="recorder.js" type="text/javascript"></script>
 <script src="script2.js" type="text/javascript"></script>
 <script id="audio-mkup" type="text/x-handlebars-template">
   <div class="audio-container" id="audio{{id}}">
