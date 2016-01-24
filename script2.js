@@ -5,7 +5,7 @@ $(document).ready(function() {
   var feedback = 0.0;
   var filter = 0.0;
 
-
+  /* Slider change listeners */
   $(document).on("change", "#delay-val", function() {
     if(delay != null) {
       d = parseFloat($(this).val());
@@ -34,23 +34,24 @@ $(document).ready(function() {
       console.log("filter: "+d);
     }
   });
-
+  /* END Slider change listeners */
+  /* Visualization toggle  */
   $(document).on("click", "#toggle-visualizer", function() {
     $("#bar-canvas").toggle();
-    $("#graph-canvas").toggle();  
+    $("#graph-canvas").toggle();
   });
 
+  //cross browser getUserMedia
   navigator.getUserMedia = ( navigator.getUserMedia ||
                          navigator.webkitGetUserMedia ||
                          navigator.mozGetUserMedia ||
                          navigator.msGetUserMedia);
 
-
+  //get canvas dom elements
   var bar_canvas = document.querySelector('#bar-canvas');
   var graph_canvas = document.querySelector('#graph-canvas');
 
   // visualiser setup - create web audio api context and canvas
-
   var ctx = new (window.AudioContext || webkitAudioContext)();
   var barCanvasCtx = bar_canvas.getContext("2d");
   var graphCanvasCtx = graph_canvas.getContext("2d");
@@ -64,10 +65,10 @@ $(document).ready(function() {
       { audio: true },
       function(stream) {
         visualize(stream);
+         // create an AudioNode from the mic stream
+         var mediaStreamSource = ctx.createMediaStreamSource(stream);
 
-         // Create an AudioNode from the stream.
-         var mediaStreamSource = ctx.createMediaStreamSource( stream );
-
+         //apply effects
          delay = ctx.createDelay();
          delay.delayTime.value = 0;
          feedback = ctx.createGain();
@@ -78,13 +79,13 @@ $(document).ready(function() {
          delay.connect(feedback);
          feedback.connect(filter);
          filter.connect(delay);
-         //
-        mediaStreamSource.connect(delay);
-        //  mediaStreamSource.connect(ctx.destination);
-        delay.connect(ctx.destination);
 
-         // Connect it to the destination to hear yourself
-        mediaStreamSource.connect( ctx.destination );
+         //connect effects to stream audioNode
+         mediaStreamSource.connect(delay);
+         delay.connect(ctx.destination);
+
+         //connect processed audio to the audio output
+         mediaStreamSource.connect( ctx.destination );
 
       },
       function(err) {
@@ -97,6 +98,7 @@ $(document).ready(function() {
   }
 
   function visualize(stream) {
+    //get source from context stream
     var source = ctx.createMediaStreamSource(stream);
 
     var analyser = ctx.createAnalyser();
@@ -105,7 +107,6 @@ $(document).ready(function() {
     var dataArray = new Uint8Array(bufferLength);
 
     source.connect(analyser);
-    //analyser.connect(audioCtx.destination);
 
     draw_bar_graph();
     draw_oscilloscope();
